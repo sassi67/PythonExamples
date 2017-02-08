@@ -1,14 +1,12 @@
 """ Test Module """
 from job import Job, JobState
 from jobtree import JobTree
+from scheduler import Scheduler
 
 def show(alist):
     """ simple printer """
     for job in alist:
-        if job.parent_job:
-            print "%s --- > %s" % (job.parent_job.job_name, job.job_name)
-        else:
-            print job.job_name
+        print "%s --- > %d" % (job.job_name, job.job_status)
         show(job.children)
 
 if __name__ == '__main__':
@@ -59,7 +57,14 @@ if __name__ == '__main__':
     job_list.append(Job("Test_017", 2, job_list[11]))
     job_list.append(Job("Test_018", 1, job_list[11]))
 
-    job_tree_builder = JobTree(job_list, 10)
+    job_tree_builder = JobTree(job_list, 20)
 
-    show(job_tree_builder.build_job_tree())
+    job_tree = job_tree_builder.build_job_tree()
+    show(job_tree)
+
+    sched = Scheduler(20, job_tree)
+    sched.run()
+
+    show(job_tree)
+
 

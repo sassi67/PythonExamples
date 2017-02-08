@@ -68,7 +68,11 @@ class JobTree(object):
             if len(childrenlist) > 0:
                 # order the sublist of children
                 quick_sort(childrenlist)
-                # append the order list of children to their parent
+                # set the "next" attribute of each element in the list
+                for i, _ in reversed(list(enumerate(childrenlist))):
+                    if i < len(childrenlist) - 1:
+                        childrenlist[i].setnext(childrenlist[i + 1])
+                # append the ordered list of children to their parent
                 for job in childrenlist:
                     pjob.addchild(job)
         # build a sublist of all the jobs without parents and sort it
@@ -77,6 +81,10 @@ class JobTree(object):
                 continue
             self._job_tree.append(job)
         quick_sort(self._job_tree)
+        # set the "next" attribute of each element in the list
+        for i, _ in reversed(list(enumerate(self._job_tree))):
+            if i < len(self._job_tree) - 1:
+                self._job_tree[i].setnext(self._job_tree[i + 1])
 
         return self._job_tree
 

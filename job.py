@@ -14,10 +14,11 @@ def enum(**enums):
 
 JobState = enum(
     NOT_TESTED=0,
-    RUNNING=1,
-    TEST_OK=2,
-    TEST_FAIL=3,
-    TEST_SKIPPED=4
+    SCHEDULED=1,
+    RUNNING=2,
+    TEST_OK=3,
+    TEST_FAIL=4,
+    TEST_SKIPPED=5
 )
 
 class Job(object):
