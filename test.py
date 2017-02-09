@@ -7,34 +7,11 @@ results = ["NOT_TESTED", "SCHEDULED", "RUNNING", "OK", "FAILED", "SKIPPED"]
 def show(alist):
     """ simple printer """
     for job in alist:
-        print "%s --- > %s" % (job.job_name, results[job.job_status])
+        print "%s --- > %s" % (job.name, results[job.status])
         show(job.children)
 
 if __name__ == '__main__':
-#j1 = Job("Test_001", 2)
-#j2 = Job("Test_002", 1, j1)
-
-#print j1.job_name
-#print j1.resources_needed
-#print j1.job_status
-
-#j1.job_status = JobState.RUNNING
-
-#print "New status: %d" % (j1.job_status)
-
-#print "j2 name: %s" % (j2.job_name)
-#print "j2 resources_needed: %d" % (j2.resources_needed)
-#print "j2 job_status: %d" % (j2.job_status)
-
-#children = j1.children
-#for j in children:
-#    print "child job name: %s" % (j.job_name)
-#    print "parent job name: %s" % (j.parent_job.job_name)
-
-#if j1 < j2:
-#    print "j1 < j2"
-#else:
-#    print "j2 < j1"
+    
     RESOURCES_AVAILABLE = 20
     job_list = []
     job_list.append(Job("Test_001", 10))

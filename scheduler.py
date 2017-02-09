@@ -68,43 +68,43 @@ class Scheduler(object):
         start_time = dt.datetime.now()
         five_sec = timedelta(seconds=1) * 5
 
-        self.__print_msg("     Job: %s -- Start time: %s" % (job.job_name, start_time))
+        self.__print_msg("     Job: %s -- Start time: %s" % (job.name, start_time))
         while True:
             sleep(1)
             if dt.datetime.now() >= start_time + five_sec:
                 break
-        self.__print_msg("     Job: %s -- End time: %s" % (job.job_name, dt.datetime.now()))
+        self.__print_msg("     Job: %s -- End time: %s" % (job.name, dt.datetime.now()))
         #-------------------
         self._job_buffer.task_done()
-        for _ in range(0, job.resources_needed):
+        for _ in range(job.resources):
             self._used_res_sem.acquire()
             self._resources_available = self._resources_available + 1
             self._free_res_sem.release()
         # ----------------
         # get the result of the test on this job
         # FOR TEST: put always
-        if job.job_name == "Test_010":
-            job.job_status = JobState.TEST_FAIL
+        if job.name == "Test_010":
+            job.status = JobState.TEST_FAIL
         else:
-            job.job_status = JobState.TEST_OK
+            job.status = JobState.TEST_OK
         self.__print_msg("     Job: %s executed with result -> %s." % \
-        (job.job_name, self._results[job.job_status]))
+        (job.name, self._results[job.status]))
         self.__print_msg("     Job: %s resources released -> %d." % \
-        (job.job_name, job.resources_needed))
+        (job.name, job.resources))
         self.__print_msg("     Job: Resources available now: %d." % \
         (self._resources_available))
         # if the test fails the put all the job children in the TEST_SKIPPED state
-        if job.job_status == JobState.TEST_FAIL:
+        if job.status == JobState.TEST_FAIL:
             self.__skip_children(job)
 
     def __get_next_job(self, job):
         next_job = None
         # if the parent job has not finished the test then skip
-        if job.parent_job:
-            if job.parent_job.job_status != JobState.TEST_OK:
+        if job.parent:
+            if job.parent.status != JobState.TEST_OK:
                 return next_job
-        if job.job_status == JobState.NOT_TESTED and \
-            job.resources_needed <= self._resources_available:
+        if job.status == JobState.NOT_TESTED and \
+            job.resources <= self._resources_available:
             next_job = job
         if next_job is None and job.children:
             next_job = self.__get_next_job(job.children[0])
@@ -113,7 +113,7 @@ class Scheduler(object):
         return next_job
 
     def __job_not_scheduled(self, job):
-        job_not_scheduled = (job.job_status == JobState.NOT_TESTED)
+        job_not_scheduled = (job.status == JobState.NOT_TESTED)
         if not job_not_scheduled and job.children:
             job_not_scheduled = self.__job_not_scheduled(job.children[0])
         if not job_not_scheduled and job.next:
@@ -130,9 +130,9 @@ class Scheduler(object):
                 next_job = self.__get_next_job(self._job_tree[0])
                 if next_job:
                     self.__print_msg("Producer: scheduled the job -> %s resources needed: %d" % \
-                    (next_job.job_name, next_job.resources_needed))
-                    next_job.job_status = JobState.SCHEDULED
-                    for _ in range(0, next_job.resources_needed):
+                    (next_job.name, next_job.resources))
+                    next_job.status = JobState.SCHEDULED
+                    for _ in range(next_job.resources):
                         self._free_res_sem.acquire()
                         self._resources_available = self._resources_available - 1
                         self._used_res_sem.release()
@@ -150,7 +150,7 @@ class Scheduler(object):
             sleep(1)
 
     def __job_not_executed(self, job):
-        job_not_executed = (job.job_status < JobState.TEST_OK)
+        job_not_executed = (job.status < JobState.TEST_OK)
         if not job_not_executed and job.children:
             job_not_executed = self.__job_not_executed(job.children[0])
         if not job_not_executed and job.next:
@@ -159,9 +159,9 @@ class Scheduler(object):
 
     def __skip_children(self, parent_job):
         for child_job in parent_job.children:
-            child_job.job_status = JobState.TEST_SKIPPED
+            child_job.status = JobState.TEST_SKIPPED
             self.__print_msg("     Job: %s marked as %s." % \
-            (child_job.job_name, self._results[child_job.job_status]))
+            (child_job.name, self._results[child_job.status]))
             self.__skip_children(child_job)
 
     def __consumer(self):
@@ -171,8 +171,8 @@ class Scheduler(object):
             if not self._job_buffer.empty():
                 # get the job from the buffer
                 job = self._job_buffer.get()
-                job.job_status = JobState.RUNNING
-                self.__print_msg("Consumer: the job -> %s is sent to execution." % (job.job_name))
+                job.status = JobState.RUNNING
+                self.__print_msg("Consumer: the job -> %s is sent to execution." % (job.name))
                 # add the job to the thread pool
                 self._pool.add_task(self.__job_run, job)
             else:

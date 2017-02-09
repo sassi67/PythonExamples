@@ -50,8 +50,8 @@ class JobTree(object):
         self._job_list = job_list
         if not isinstance(self._job_list, list):
             raise "job_list is NOT a list"
-        self.resources_available = resources_available
-        if not isinstance(self.resources_available, int):
+        self._resources_available = resources_available
+        if not isinstance(self._resources_available, int):
             raise "resources_available is NOT an int"
         self._job_tree = []
 
@@ -63,7 +63,7 @@ class JobTree(object):
             for job in self._job_list:
                 if pjob == job:
                     continue
-                if job.parent_job == pjob:
+                if job.parent == pjob:
                     childrenlist.append(job)
             if len(childrenlist) > 0:
                 # order the sublist of children
@@ -77,7 +77,7 @@ class JobTree(object):
                     pjob.addchild(job)
         # build a sublist of all the jobs without parents and sort it
         for job in self._job_list:
-            if job.parent_job:
+            if job.parent:
                 continue
             self._job_tree.append(job)
         quick_sort(self._job_tree)

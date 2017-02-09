@@ -23,53 +23,53 @@ JobState = enum(
 
 class Job(object):
     """ Fake class to represent a job """
-    def __init__(self, job_name, resources_needed, parentjob=None):
+    def __init__(self, job_name, job_resources, job_parent=None):
         """ constructor """
-        self._job_name = job_name
-        if not isinstance(self._job_name, basestring):
+        self._name = job_name
+        if not isinstance(self._name, basestring):
             raise "job_name is NOT a string"
-        self._resources_needed = resources_needed
-        if not isinstance(self._resources_needed, int):
-            raise "resources_needed is NOT an int"
-        self._parent_job = parentjob
-        if parentjob:
-            if not isinstance(self._parent_job, Job):
-                raise "parentjob is NOT a Job"
-        self._job_status = JobState.NOT_TESTED
+        self._resources = job_resources
+        if not isinstance(self._resources, int):
+            raise "job_resources is NOT an int"
+        self._parent = job_parent
+        if job_parent:
+            if not isinstance(self._parent, Job):
+                raise "job_parent is NOT a Job"
+        self._status = JobState.NOT_TESTED
         self._children = [] # a list of Job
         self._next = None # or a Job
 
-    # job_name, resources_needed are read-only
+    # name, job_resources are read-only
     @property
-    def job_name(self):
+    def name(self):
         """ read the job name """
-        return self._job_name
+        return self._name
 
     @property
-    def resources_needed(self):
+    def resources(self):
         """ read the number of resources needed """
-        return self._resources_needed
+        return self._resources
 
     @property
-    def parent_job(self):
+    def parent(self):
         """ read the parent job """
-        return self._parent_job
-    @parent_job.setter
-    def parent_job(self, job):
+        return self._parent
+    @parent.setter
+    def parent(self, job):
         """ set the parent job """
         if not isinstance(job, Job):
             raise "job is NOT a Job"
-        self._parent_job = job
+        self._parent = job
 
     @property
-    def job_status(self):
+    def status(self):
         """ read the job status """
-        return self._job_status
-    @job_status.setter
-    def job_status(self, status):
+        return self._status
+    @status.setter
+    def status(self, status):
         """ change the job status """
         if status >= JobState.NOT_TESTED and status <= JobState.TEST_SKIPPED:
-            self._job_status = status
+            self._status = status
 
     @property
     def children(self):
@@ -97,42 +97,42 @@ class Job(object):
     def __lt__(self, other):
         if not isinstance(other, Job):
             raise "Invalid comparison!"
-        if self._resources_needed < other.resources_needed:
+        if self._resources < other.resources:
             return True
-        elif self._resources_needed > other.resources_needed:
+        elif self._resources > other.resources:
             return False
         else:
-            self._job_name < other.job_name
+            self._name < other.name
 
     # redefine 'less equal' operator
     def __le__(self, other):
         if not isinstance(other, Job):
             raise "Invalid comparison!"
-        if self._resources_needed < other.resources_needed:
+        if self._resources < other.resources:
             return True
-        elif self._resources_needed > other.resources_needed:
+        elif self._resources > other.resources:
             return False
         else:
-            self._job_name <= other.job_name
+            self._name <= other.name
 
     # redefine 'greater' operator
     def __gt__(self, other):
         if not isinstance(other, Job):
             raise "Invalid comparison!"
-        if self._resources_needed > other.resources_needed:
+        if self._resources > other.resources:
             return True
-        elif self._resources_needed < other.resources_needed:
+        elif self._resources < other.resources:
             return False
         else:
-            self._job_name > other.job_name
+            self._name > other.name
 
     # redefine 'greater equal' operator
     def __ge__(self, other):
         if not isinstance(other, Job):
             raise "Invalid comparison!"
-        if self._resources_needed > other.resources_needed:
+        if self._resources > other.resources:
             return True
-        elif self._resources_needed < other.resources_needed:
+        elif self._resources < other.resources:
             return False
         else:
-            self._job_name >= other.job_name
+            self._name >= other.name
