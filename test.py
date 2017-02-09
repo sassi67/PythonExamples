@@ -3,10 +3,11 @@ from job import Job, JobState
 from jobtree import JobTree
 from scheduler import Scheduler
 
+results = ["NOT_TESTED", "SCHEDULED", "RUNNING", "OK", "FAILED", "SKIPPED"]
 def show(alist):
     """ simple printer """
     for job in alist:
-        print "%s --- > %d" % (job.job_name, job.job_status)
+        print "%s --- > %s" % (job.job_name, results[job.job_status])
         show(job.children)
 
 if __name__ == '__main__':
@@ -34,7 +35,7 @@ if __name__ == '__main__':
 #    print "j1 < j2"
 #else:
 #    print "j2 < j1"
-
+    RESOURCES_AVAILABLE = 20
     job_list = []
     job_list.append(Job("Test_001", 10))
     job_list.append(Job("Test_002", 9))
@@ -53,16 +54,16 @@ if __name__ == '__main__':
     job_list.append(Job("Test_014", 1, job_list[0]))
     job_list.append(Job("Test_015", 3, job_list[0]))
 
-    job_list.append(Job("Test_016", 3, job_list[11]))
-    job_list.append(Job("Test_017", 2, job_list[11]))
-    job_list.append(Job("Test_018", 1, job_list[11]))
+    job_list.append(Job("Test_016", 3, job_list[9]))
+    job_list.append(Job("Test_017", 2, job_list[9]))
+    job_list.append(Job("Test_018", 1, job_list[9]))
 
-    job_tree_builder = JobTree(job_list, 20)
+    job_tree_builder = JobTree(job_list, RESOURCES_AVAILABLE)
 
     job_tree = job_tree_builder.build_job_tree()
     show(job_tree)
 
-    sched = Scheduler(20, job_tree)
+    sched = Scheduler(RESOURCES_AVAILABLE, job_tree)
     sched.run()
 
     show(job_tree)
