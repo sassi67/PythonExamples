@@ -30,13 +30,15 @@ class Scheduler(object):
         self._job_tree = job_tree
         if not isinstance(self._job_tree, list):
             raise "job_tree is NOT a list"
+        # thread pool for producer/consumer
+        self._tp_prod_cons = ThreadPool(2)
         # semaphores
         self._free_res_sem = None
         self._used_res_sem = None
         # queue for exchange
         self._job_buffer = Queue()
-        # thread pool
-        self._pool = ThreadPool(total_resources)
+        # thread pool fo the resource management
+        self._tp_resources = ThreadPool(total_resources)
         # thread pool for the synchronous management of messages
         self._msg_manager = ThreadPool(1)
         # descriptions
@@ -44,18 +46,14 @@ class Scheduler(object):
 
     def run(self):
         """ start the scheduler """
-        # semaphores initialization
         # semaphore managed by the producer
         self._free_res_sem = Semaphore(self._total_resources)
         # semaphore managed by the consumer
         self._used_res_sem = Semaphore(0)
-        # threads creation
-        thProd = Thread(target=self.__producer)
-        thCons = Thread(target=self.__consumer)
-        thProd.start()
-        thCons.start()
-        thProd.join()
-        thCons.join()
+        # threads creation for producer/consumer
+        self._tp_prod_cons.add_task(func=self.__producer)
+        self._tp_prod_cons.add_task(func=self.__consumer)
+        self._tp_prod_cons.wait_completion()
         self._job_buffer.join()
 
     def __print_msg_private(self, msg):
@@ -174,7 +172,7 @@ class Scheduler(object):
                 job.status = JobState.RUNNING
                 self.__print_msg("Consumer: the job -> %s is sent to execution." % (job.name))
                 # add the job to the thread pool
-                self._pool.add_task(self.__job_run, job)
+                self._tp_resources.add_task(self.__job_run, job)
             else:
                 # are all the jobs tested? If yes then stop Consumer
                 if not self.__job_not_executed(self._job_tree[0]):
@@ -183,5 +181,5 @@ class Scheduler(object):
                 self.__print_msg("Consumer: finished.")
                 break
             sleep(1)
-        self._pool.wait_completion()
+        self._tp_resources.wait_completion()
         self._msg_manager.wait_completion()
