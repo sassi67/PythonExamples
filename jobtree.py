@@ -20,7 +20,6 @@ def quick_sort_helper(alist, first, last):
         quick_sort_helper(alist, first, splitpoint - 1)
         quick_sort_helper(alist, splitpoint + 1, last)
 
-
 def partition(alist, first, last):
     """ partition builder (helper function)"""
     pivotvalue = alist[first]
@@ -45,18 +44,35 @@ def partition(alist, first, last):
 
 class JobTree(object):
     """ class responsible for the creation of the queue for jobs """
-    def __init__(self, job_list, resources_available):
+    def __init__(self, job_list):
         """ constructor """
         self._job_list = job_list
         if not isinstance(self._job_list, list):
             raise "job_list is NOT a list"
-        self._resources_available = resources_available
-        if not isinstance(self._resources_available, int):
-            raise "resources_available is NOT an int"
-        self._job_tree = []
+        self._machines = [] # a list of Machine(s)
+        self._job_tree = [] # a list of Job(s)
 
-    def build_job_tree(self):
-        """ build the tree and return it"""
+    def build(self):
+        """ build the tree """
+        for job in self._job_list:
+            existing_machine = False
+            for machine in self._machines:
+                if job.machine_name == machine.name:
+                    existing_machine = True
+                    break
+            if not existing_machine:
+                # create a new Machine
+                machine = Machine(job.machine_name)
+            # add the resources
+            for resource in job.resources:
+                machine.add_resource(resource)
+            # add this job
+            machine.add_job(job)
+            if not existing_machine:
+                self._machines.append(machine)
+        # order the jobs for each machine
+        for machine in self._machines:
+            quick_sort(machine.jobs)
         # loop the initial list of jobs and foreach job create a new sublist of its children
         for pjob in self._job_list:
             childrenlist = []
@@ -86,12 +102,68 @@ class JobTree(object):
             if i < len(self._job_tree) - 1:
                 self._job_tree[i].setnext(self._job_tree[i + 1])
 
-        return self._job_tree
-
+    @property
+    def machines(self):
+        """ read the tree of jobs """
+        return self._machines
     @property
     def job_tree(self):
         """ read the tree of jobs """
         return self._job_tree
+
+class JobResource(object):
+    """ Class to represent a resource """
+    def __init__(self, name):
+        self._name = name
+        self._locked = False
+    # name is read-only
+    @property
+    def name(self):
+        """ read the job name """
+        return self._name
+    @property
+    def locked(self):
+        """ read the lock status """
+        return self._locked
+    @locked.setter
+    def locked(self, lock):
+        """ set the lock status """
+        if not isinstance(lock, bool):
+            raise "lock is NOT a bool"
+        self._locked = lock
+
+class Machine(object):
+    """ Class to represent a Machine """
+    def __init__(self, name):
+        self._name = name
+        self._resources = [] # a list of JobResource
+        self._jobs = [] # a list of Job
+    # name is read-only
+    @property
+    def name(self):
+        """ read the job name """
+        return self._name
+    @property
+    def resources(self):
+        """ read the list of resources"""
+        return self._resources
+    def add_resource(self, resource):
+        """ add a resource to the machine """
+        resource_exists = False
+        for res in self._resources:
+            if res.name == resource:
+                resource_exists = True
+                break
+        if not resource_exists:
+            self._resources.append(JobResource(resource))
+
+    @property
+    def jobs(self):
+        """ read the job tree"""
+        return self._jobs
+    def add_job(self, job):
+        """ add a job to the machine """
+        self._jobs.append(job)
 
 if __name__ == '__main__':
     L = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
