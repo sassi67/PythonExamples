@@ -144,3 +144,95 @@ class Job(object):
             return False
         else:
             return self._job_id >= other.job_id
+
+class CompileJob(Job):
+    """ Fake class to represent a compile job """
+    def __init__(self, job_id, machine_name, required_resources, job_parent=None):
+        """ constructor """
+        super(CompileJob, self).__init__(job_id, machine_name, required_resources, job_parent)
+
+    # redefine 'less' operator
+    def __lt__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, CompileJob):
+                return super(CompileJob, self).__lt__(other)
+            else:
+                return True
+        else:
+            raise "Invalid comparison!"
+
+    # redefine 'greater' operator
+    def __gt__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, CompileJob):
+                return super(CompileJob, self).__gt__(other)
+            else:
+                return False
+        else:
+            raise "Invalid comparison!"
+
+    # redefine 'less equal' operator
+    def __le__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, CompileJob):
+                return super(CompileJob, self).__le__(other)
+            else:
+                return True
+        else:
+            raise "Invalid comparison!"
+
+    # redefine 'greater equal' operator
+    def __ge__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, CompileJob):
+                return super(CompileJob, self).__ge__(other)
+            else:
+                return False
+        else:
+            raise "Invalid comparison!"
+
+class RunTestcaseJob(Job):
+    """ Fake class to represent a RunTestcase job """
+    def __init__(self, job_id, machine_name, required_resources, job_parent=None):
+        """ constructor """
+        super(RunTestcaseJob, self).__init__(job_id, machine_name, required_resources, job_parent)
+
+    # redefine 'less' operator
+    def __lt__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, RunTestcaseJob):
+                return super(RunTestcaseJob, self).__lt__(other)
+            else:
+                return False
+        else:
+            raise "Invalid comparison!"
+
+    # redefine 'less equal' operator
+    def __le__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, RunTestcaseJob):
+                return super(RunTestcaseJob, self).__le__(other)
+            else:
+                return False
+        else:
+            raise "Invalid comparison!"
+
+    # redefine 'greater' operator
+    def __gt__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, RunTestcaseJob):
+                return super(RunTestcaseJob, self).__gt__(other)
+            else:
+                return True
+        else:
+            raise "Invalid comparison!"
+
+    # redefine 'greater equal' operator
+    def __ge__(self, other):
+        if isinstance(other, Job):
+            if isinstance(other, RunTestcaseJob):
+                return super(RunTestcaseJob, self).__ge__(other)
+            else:
+                return True
+        else:
+            raise "Invalid comparison!"

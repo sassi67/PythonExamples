@@ -10,6 +10,7 @@
 from threading import Thread, Semaphore, Lock, Timer, Event
 from Queue import Queue
 from time import sleep
+from contextlib import contextmanager
 from datetime import timedelta
 import datetime as dt
 import logging

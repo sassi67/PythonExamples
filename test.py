@@ -1,5 +1,5 @@
 """ Test Module """
-from job import Job, JobState
+from job import Job, JobState, RunTestcaseJob, CompileJob
 from jobtree import JobTree, Machine
 from scheduler import Scheduler
 import os
@@ -36,40 +36,40 @@ if __name__ == '__main__':
     # job_list.append(Job("Test_017", 2, job_list[9]))
     # job_list.append(Job("Test_018", 1, job_list[9]))
 
-    job_list.append(Job("Test_001", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
+    job_list.append(CompileJob("Test_001", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
                                             "R01_06", "R01_07", "R01_08", "R01_09", "R01_10"]))
-    job_list.append(Job("Test_002", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
+    job_list.append(RunTestcaseJob("Test_002", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
                                             "R01_06", "R01_07", "R01_08", "R01_09"]))
-    job_list.append(Job("Test_003", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
+    job_list.append(RunTestcaseJob("Test_003", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
                                             "R01_06", "R01_07", "R01_08"]))
-    job_list.append(Job("Test_004", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
+    job_list.append(RunTestcaseJob("Test_004", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
                                             "R01_06", "R01_07"]))
-    job_list.append(Job("Test_005", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
+    job_list.append(RunTestcaseJob("Test_005", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05", \
                                             "R01_06"]))
-    job_list.append(Job("Test_006", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05"]))
-    job_list.append(Job("Test_007", "M01", ["R01_07", "R01_08", "R01_09", "R01_10"]))
-    job_list.append(Job("Test_008", "M01", ["R01_04", "R01_05", "R01_06"]))
-    job_list.append(Job("Test_009", "M01", ["R01_02", "R01_03"]))
-    job_list.append(Job("Test_010", "M01", ["R01_01"]))
+    job_list.append(RunTestcaseJob("Test_006", "M01", ["R01_01", "R01_02", "R01_03", "R01_04", "R01_05"]))
+    job_list.append(RunTestcaseJob("Test_007", "M01", ["R01_07", "R01_08", "R01_09", "R01_10"]))
+    job_list.append(RunTestcaseJob("Test_008", "M01", ["R01_04", "R01_05", "R01_06"]))
+    job_list.append(RunTestcaseJob("Test_009", "M01", ["R01_02", "R01_03"]))
+    job_list.append(RunTestcaseJob("Test_010", "M01", ["R01_01"]))
 
-    job_list.append(Job("Test_011", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
+    job_list.append(RunTestcaseJob("Test_011", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
                                             "R02_06", "R02_07", "R02_08", "R02_09", "R02_10"], \
-                                            job_list[0]))
-    job_list.append(Job("Test_012", "M02", ["R02_01", "R02_02", "R02_03", "R02_04"], job_list[0]))
-    job_list.append(Job("Test_013", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
+                                            job_list[9]))
+    job_list.append(RunTestcaseJob("Test_012", "M02", ["R02_01", "R02_02", "R02_03", "R02_04"], job_list[0]))
+    job_list.append(RunTestcaseJob("Test_013", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
                                             "R02_06", "R02_07"], job_list[0]))
-    job_list.append(Job("Test_014", "M02", ["R02_01"], job_list[0]))
-    job_list.append(Job("Test_015", "M02", ["R02_01", "R02_02", "R02_03"], job_list[0]))
+    job_list.append(RunTestcaseJob("Test_014", "M02", ["R02_01"], job_list[0]))
+    job_list.append(RunTestcaseJob("Test_015", "M02", ["R02_01", "R02_02", "R02_03"], job_list[10]))
 
-    job_list.append(Job("Test_011", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
-                                            "R02_06", "R02_07", "R02_08", "R02_09", "R02_10"]))
-    job_list.append(Job("Test_012", "M02", ["R02_01", "R02_02", "R02_03", "R02_04"]))
-    job_list.append(Job("Test_013", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
-                                            "R02_06", "R02_07"]))
-    job_list.append(Job("Test_014", "M02", ["R02_01"]))
-    job_list.append(Job("Test_015", "M02", ["R02_01", "R02_02", "R02_03"]))
+    # job_list.append(Job("Test_011", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
+    #                                         "R02_06", "R02_07", "R02_08", "R02_09", "R02_10"]))
+    # job_list.append(Job("Test_012", "M02", ["R02_01", "R02_02", "R02_03", "R02_04"]))
+    # job_list.append(Job("Test_013", "M02", ["R02_01", "R02_02", "R02_03", "R02_04", "R02_05", \
+    #                                         "R02_06", "R02_07"]))
+    # job_list.append(Job("Test_014", "M02", ["R02_01"]))
+    # job_list.append(Job("Test_015", "M02", ["R02_01", "R02_02", "R02_03"]))
 
-    job_list.append(Job("Test_016", "M03", ["R03_01", "R03_02", "R03_03"]))
+    job_list.append(CompileJob("Test_016", "M03", ["R03_01", "R03_02", "R03_03"]))
     job_list.append(Job("Test_017", "M03", ["R03_01", "R03_02"]))
     job_list.append(Job("Test_018", "M03", ["R03_01"]))
 
@@ -77,6 +77,15 @@ if __name__ == '__main__':
 
     job_tree_builder.build()
     #show(job_tree)
+    for machine in job_tree_builder.machines:
+        print "Machine %s has %d resources" % (machine.name, len(machine.resources))
+        for resource in machine.resources:
+            print "Machine %s: Resource: %s" % (machine.name, resource.name)
+        for job in machine.jobs:
+            print "Machine %s: Job: %s - State: %s" % (machine.name, job.job_id, results[job.status])
+
+    exit(0)
+
     schedulers = []
     for machine in job_tree_builder.machines:
         scheduler = Scheduler(machine)
@@ -86,4 +95,6 @@ if __name__ == '__main__':
     for scheduler in schedulers:
         scheduler.join()
 
-
+    for machine in job_tree_builder.machines:
+        for job in machine.jobs:
+            print "Machine %s: Job: %s - State: %s" % (machine.name, job.job_id, results[job.status])
